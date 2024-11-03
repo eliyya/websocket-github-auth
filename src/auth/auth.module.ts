@@ -1,8 +1,8 @@
 // src/auth/auth.module.ts
-import { Module } from '@nestjs/common';
-import { AuthGateway } from './auth.gateway';
+import { Module } from '@nestjs/common'
+import { AuthGateway } from './auth.gateway'
 
 @Module({
-  providers: [AuthGateway],
+    providers: [AuthGateway],
 })
 export class AuthModule {}
