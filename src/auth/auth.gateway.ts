@@ -17,6 +17,10 @@ export class AuthGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     handleConnection(client: SocketClient) {
         console.log(`Client connected: ${client.id}`)
+        setTimeout(
+            () => this.users.get(client.id) || client.disconnect(true),
+            10_000,
+        )
     }
 
     handleDisconnect(client: SocketClient) {
