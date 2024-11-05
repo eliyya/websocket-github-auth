@@ -8,7 +8,13 @@ import {
     ConnectedSocket,
 } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { EventsEmitMap, EventsListenerMap, SocketClient, User } from './types'
+import {
+    EventsEmitMap,
+    EventsListenerMap,
+    Message,
+    SocketClient,
+    User,
+} from './types'
 
 @WebSocketGateway({ cors: { origin: '*', credentials: true } })
 export class AuthGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -64,13 +70,16 @@ export class AuthGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('sendMessage')
     handleMessage(
         @ConnectedSocket() client: SocketClient,
-        @MessageBody() message: string,
+        @MessageBody() message: Message,
     ) {
         const user = this.users.get(client.id)
         console.log({ username: user.login, message })
         if (user) {
             // Enviar el mensaje a todos los usuarios conectados excepto al emisor
-            client.broadcast.emit('message', { username: user.login, message })
+            client.broadcast.emit('message', {
+                ...message,
+                username: user.login,
+            })
         }
     }
 }

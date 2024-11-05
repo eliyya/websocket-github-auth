@@ -54,7 +54,7 @@ export interface EventsListenerClientMap {
     // [event: string]: (...args: any[]) => void
     authSuccess: (data: { message: string; user: GithubSuccesResponse }) => any
     authError: (data: { message: string }) => any
-    message(data: { username: string; message: string }): any
+    message(data: Message): any
 }
 export interface EventsEmitClientMap {
     // [event: string]: (...args: any[]) => void
