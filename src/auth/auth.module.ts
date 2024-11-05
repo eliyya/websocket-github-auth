@@ -1,8 +1,7 @@
-// src/auth/auth.module.ts
-import { Module } from '@nestjs/common'
-import { AuthGateway } from './auth.gateway'
+import { Module } from '@nestjs/common';
+import { AuthController } from './auth.controller';
 
 @Module({
-    providers: [AuthGateway],
+  controllers: [AuthController]
 })
 export class AuthModule {}

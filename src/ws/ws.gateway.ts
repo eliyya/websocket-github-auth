@@ -17,7 +17,7 @@ import {
 } from './types'
 
 @WebSocketGateway({ cors: { origin: '*', credentials: true } })
-export class AuthGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server<EventsListenerMap, EventsEmitMap>
     private users: Map<string, User> = new Map()
 
