@@ -37,30 +37,40 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('auth')
     async handleAuth(
         @ConnectedSocket() client: SocketClient,
-        @MessageBody() token: string,
+        @MessageBody() username: string,
     ) {
-        console.log(`Client trying autenicate: ${client.id}`)
+        console.log(`Client trying autenicate: ${client.id}`, username)
 
         try {
-            const response = await fetch('https://api.github.com/user', {
+            fetch('https://api.github.com/users/' + username, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json', // Tipo de contenido
                 },
             })
-            if (!response.ok) throw new Error('Authentication failed')
-            const userData = await response.json()
-
+                .then(r => r.json())
+                .then(({ avatar_url }) => {
+                    this.users.set(client.id, {
+                        id: client.id,
+                        login: username,
+                        avatar: avatar_url,
+                    })
+                })
+                .catch(() => {
+                    this.users.set(client.id, {
+                        id: client.id,
+                        login: username,
+                    })
+                })
             // Agregar el usuario a la lista de usuarios conectados
-            this.users.set(client.id, { id: client.id, login: userData.login })
 
             // Informar al usuario que ha sido autenticado
             client.emit('authSuccess', {
                 message: 'Authenticated successfully',
-                user: userData,
+                user: this.users.get(client.id),
             })
             console.log(`Client autenicatd: ${client.id}`)
             // Notificar a todos los usuarios sobre la nueva conexión
-            this.server.emit('userConnected', { username: userData.login })
+            this.server.emit('userConnected', { username })
         } catch (error) {
             console.error('Authentication error:', error)
             client.emit('authError', { message: 'Authentication failed' })
@@ -76,9 +86,9 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log({ username: user.login, message })
         if (user) {
             // Enviar el mensaje a todos los usuarios conectados excepto al emisor
-            client.broadcast.emit('message', {
+            this.server.emit('message', {
                 ...message,
-                username: user.login,
+                avatar: user.avatar,
             })
         }
     }

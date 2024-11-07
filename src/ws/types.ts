@@ -4,6 +4,7 @@ export type SocketClient = Socket<EventsEmitClientMap, EventsListenerClientMap>
 export interface User {
     id: string
     login: string
+    avatar?: string
 }
 
 export interface GithubSuccesResponse {
@@ -52,13 +53,13 @@ export interface Message {
 
 export interface EventsListenerClientMap {
     // [event: string]: (...args: any[]) => void
-    authSuccess: (data: { message: string; user: GithubSuccesResponse }) => any
+    authSuccess: (data: { message: string; user: User }) => any
     authError: (data: { message: string }) => any
     message(data: Message): any
 }
 export interface EventsEmitClientMap {
     // [event: string]: (...args: any[]) => void
-    auth: (token: string) => any
+    auth: (username: string) => any
     sendMessage: (message: Message) => any
 }
 export interface EventsListenerMap {
@@ -68,4 +69,6 @@ export interface EventsListenerMap {
 export interface EventsEmitMap {
     // [event: string]: (...args: any[]) => void
     userConnected: (data: { username: string }) => any
+
+    message(data: Message): any
 }
